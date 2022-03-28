@@ -16,6 +16,7 @@ import com.kuaishou.akdanmaku.render.SimpleRenderer
 import com.kuaishou.akdanmaku.render.TypedDanmakuRenderer
 import com.kuaishou.akdanmaku.ui.DanmakuPlayer
 import com.kuaishou.akdanmaku.ui.DanmakuView
+import utils.UIUtils
 
 class SampleFullScreenActivity : AppCompatActivity() {
 
@@ -62,6 +63,9 @@ class SampleFullScreenActivity : AppCompatActivity() {
     danmakuPlayController = DanmakuPlayController(this, danmakuPlayer, byStep)
     mainHandler.sendEmptyMessageDelayed(MSG_UPDATE_DATA, 2000)
     mainHandler.sendEmptyMessageDelayed(MSG_START, 2500)
+
+
+    UIUtils.traceFrame(mainHandler)
   }
 
   override fun onResume() {
