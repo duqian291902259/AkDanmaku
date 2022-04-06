@@ -87,13 +87,13 @@ open class DuplicateMergingFilter : DanmakuDataFilter(DanmakuFilters.FILTER_TYPE
       true
     } else if (passedDanmakus.contains(item)) {
       false
-    } else if (currentDanmakus.containsKey(data.content)) {
-      currentDanmakus[data.content] = item
+    } else if (currentDanmakus.containsKey(data.content.toString())) {
+      currentDanmakus[data.content.toString()] = item
       blockedDanmakus.remove(item)
       blockedDanmakus.add(item)
       true
     } else {
-      currentDanmakus[data.content] = item
+      currentDanmakus[data.content.toString()] = item
       passedDanmakus.add(item)
       true
     }

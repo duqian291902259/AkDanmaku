@@ -65,7 +65,7 @@ class UpLogoRenderer(val drawable: Drawable) : SimpleRenderer() {
   }
 
   companion object {
-    private val UP_BACKGROUND = Color.argb(102, 0, 0, 0)
+    private val UP_BACKGROUND = Color.argb(102, 100, 100, 0)
     private const val UP_SPACE_LOGO_TEXT = 8
     private const val UP_PADDING_VERTICAL = 12
     private const val UP_PADDING_HORIZONTAL = 26

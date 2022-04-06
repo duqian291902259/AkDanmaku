@@ -40,7 +40,7 @@ class DanmakuItemData(
   /**
    * 弹幕文本内容
    */
-  val content: String,
+  var content: CharSequence,
 
   /**
    * 弹幕的局排版的方式
@@ -68,7 +68,7 @@ class DanmakuItemData(
    * 弹幕定制样式:
    * [DANMAKU_STYLE_NONE, DANMAKU_STYLE_ICON_UP, DANMAKU_STYLE_USER_AVATAR]
    */
-  val danmakuStyle: Int = DANMAKU_STYLE_NONE,
+  var danmakuStyle: Int = DANMAKU_STYLE_NONE,
 
   /**
    * Deprecated!!

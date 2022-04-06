@@ -38,100 +38,100 @@ import java.util.HashMap
 import kotlin.math.roundToInt
 
 /**
- * 一个默认的，实现了简单只绘制文字和描边的弹幕渲染器
+ * 一个默认的，实现了简单只绘制文字和描边的弹幕渲染器,todo-dq 图片渲染器和图文渲染器
  *
  * @author Xana
  */
 open class SimpleRenderer : DanmakuRenderer {
 
-  private val textPaint = TextPaint().apply {
-    color = Color.WHITE
-    style = Paint.Style.FILL
-    isAntiAlias = true
-  }
-  private val strokePaint = TextPaint().apply {
-    textSize = textPaint.textSize
-    color = Color.BLACK
-    strokeWidth = 3f
-    style = Paint.Style.FILL_AND_STROKE
-    isAntiAlias = true
-  }
-  private val debugPaint by lazy {
-    Paint().apply {
-      color = Color.RED
-      style = Paint.Style.STROKE
-      isAntiAlias = true
-      strokeWidth = 6f
+    private val textPaint = TextPaint().apply {
+        color = Color.WHITE
+        style = Paint.Style.FILL
+        isAntiAlias = true
     }
-  }
-  private val borderPaint = Paint().apply {
-    color = Color.WHITE
-    style = Paint.Style.STROKE
-    isAntiAlias = true
-    strokeWidth = 6f
-  }
-
-  override fun updatePaint(
-    item: DanmakuItem,
-    displayer: DanmakuDisplayer,
-    config: DanmakuConfig
-  ) {
-    val danmakuItemData = item.data
-    // update textPaint
-    val textSize = clamp(danmakuItemData.textSize.toFloat(), 12f, 25f) * (displayer.density - 0.6f)
-    textPaint.color = danmakuItemData.textColor or Color.argb(255, 0, 0, 0)
-    textPaint.textSize = textSize * config.textSizeScale
-    textPaint.typeface = if (config.bold) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
-    // update strokePaint
-    strokePaint.textSize = textPaint.textSize
-    strokePaint.typeface = textPaint.typeface
-    strokePaint.color = if (textPaint.color == DEFAULT_DARK_COLOR) Color.WHITE else Color.BLACK
-  }
-
-  override fun measure(
-    item: DanmakuItem,
-    displayer: DanmakuDisplayer,
-    config: DanmakuConfig
-  ): Size {
-    updatePaint(item, displayer, config)
-    val danmakuItemData = item.data
-    val textWidth = textPaint.measureText(danmakuItemData.content)
-    val textHeight = getCacheHeight(textPaint)
-    return Size(textWidth.roundToInt() + CANVAS_PADDING, textHeight.roundToInt() + CANVAS_PADDING)
-  }
-
-  override fun draw(
-    item: DanmakuItem,
-    canvas: Canvas,
-    displayer: DanmakuDisplayer,
-    config: DanmakuConfig
-  ) {
-    updatePaint(item, displayer, config)
-    val danmakuItemData = item.data
-    val x = CANVAS_PADDING * 0.5f
-    val y = CANVAS_PADDING * 0.5f - textPaint.ascent()
-    canvas.drawText(danmakuItemData.content, x, y, strokePaint)
-    canvas.drawText(danmakuItemData.content, x, y, textPaint)
-    if (danmakuItemData.danmakuStyle == DanmakuItemData.DANMAKU_STYLE_SELF_SEND) {
-      canvas.drawRect(0f, 0f, canvas.width.toFloat(), canvas.height.toFloat(), borderPaint)
+    private val strokePaint = TextPaint().apply {
+        textSize = textPaint.textSize
+        color = Color.BLACK
+        strokeWidth = 3f
+        style = Paint.Style.FILL_AND_STROKE
+        isAntiAlias = true
     }
-  }
-
-  companion object {
-    private val DEFAULT_DARK_COLOR: Int = Color.argb(255, 0x22, 0x22, 0x22)
-
-    private const val CANVAS_PADDING: Int = 6
-
-    private val sTextHeightCache: MutableMap<Float, Float> = HashMap()
-
-    private fun getCacheHeight(paint: Paint): Float {
-      val textSize = paint.textSize
-      return sTextHeightCache[textSize] ?: let {
-        val fontMetrics = paint.fontMetrics
-        val textHeight = fontMetrics.descent - fontMetrics.ascent + fontMetrics.leading
-        sTextHeightCache[textSize] = textHeight
-        textHeight
-      }
+    private val debugPaint by lazy {
+        Paint().apply {
+            color = Color.RED
+            style = Paint.Style.STROKE
+            isAntiAlias = true
+            strokeWidth = 6f
+        }
     }
-  }
+    private val borderPaint = Paint().apply {
+        color = Color.WHITE
+        style = Paint.Style.STROKE
+        isAntiAlias = true
+        strokeWidth = 6f
+    }
+
+    override fun updatePaint(
+        item: DanmakuItem,
+        displayer: DanmakuDisplayer,
+        config: DanmakuConfig
+    ) {
+        val danmakuItemData = item.data
+        // update textPaint
+        val textSize = clamp(danmakuItemData.textSize.toFloat(), 12f, 25f) * (displayer.density - 0.6f)
+        textPaint.color = danmakuItemData.textColor or Color.argb(255, 0, 0, 0)
+        textPaint.textSize = textSize * config.textSizeScale
+        textPaint.typeface = if (config.bold) Typeface.DEFAULT_BOLD else Typeface.DEFAULT
+        // update strokePaint
+        strokePaint.textSize = textPaint.textSize
+        strokePaint.typeface = textPaint.typeface
+        strokePaint.color = if (textPaint.color == DEFAULT_DARK_COLOR) Color.WHITE else Color.BLACK
+    }
+
+    override fun measure(
+        item: DanmakuItem,
+        displayer: DanmakuDisplayer,
+        config: DanmakuConfig
+    ): Size {
+        updatePaint(item, displayer, config)
+        val danmakuItemData = item.data
+        val textWidth = textPaint.measureText(danmakuItemData.content.toString())
+        val textHeight = getCacheHeight(textPaint)
+        return Size(textWidth.roundToInt() + CANVAS_PADDING, textHeight.roundToInt() + CANVAS_PADDING)
+    }
+
+    override fun draw(
+        item: DanmakuItem,
+        canvas: Canvas,
+        displayer: DanmakuDisplayer,
+        config: DanmakuConfig
+    ) {
+        updatePaint(item, displayer, config)
+        val danmakuItemData = item.data
+        val x = CANVAS_PADDING * 0.5f
+        val y = CANVAS_PADDING * 0.5f - textPaint.ascent()
+        canvas.drawText(danmakuItemData.content.toString(), x, y, strokePaint)
+        canvas.drawText(danmakuItemData.content.toString(), x, y, textPaint)
+        if (danmakuItemData.danmakuStyle == DanmakuItemData.DANMAKU_STYLE_SELF_SEND) {
+            canvas.drawRect(0f, 0f, canvas.width.toFloat(), canvas.height.toFloat(), borderPaint)
+        }
+    }
+
+    companion object {
+        private val DEFAULT_DARK_COLOR: Int = Color.argb(255, 0x22, 0x22, 0x22)
+
+        private const val CANVAS_PADDING: Int = 6
+
+        private val sTextHeightCache: MutableMap<Float, Float> = HashMap()
+
+        private fun getCacheHeight(paint: Paint): Float {
+            val textSize = paint.textSize
+            return sTextHeightCache[textSize] ?: let {
+                val fontMetrics = paint.fontMetrics
+                val textHeight = fontMetrics.descent - fontMetrics.ascent + fontMetrics.leading
+                sTextHeightCache[textSize] = textHeight
+                textHeight
+            }
+        }
+    }
 }
