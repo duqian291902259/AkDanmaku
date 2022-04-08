@@ -40,7 +40,7 @@ class DanmakuItemData(
   /**
    * 弹幕文本内容
    */
-  var content: CharSequence,
+  var content: String,
 
   /**
    * 弹幕的局排版的方式

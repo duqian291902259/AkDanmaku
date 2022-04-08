@@ -14,6 +14,7 @@ import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.res.ResourcesCompat
+import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import com.kuaishou.akdanmaku.data.DanmakuItemData
 import com.kuaishou.akdanmaku.ecs.DanmakuEngine
@@ -104,50 +105,9 @@ class SampleFullScreenActivity : AppCompatActivity() {
             val jsonString = assets.open("test_danmaku_data.json").bufferedReader().use { it.readText() }
             val type = object : TypeToken<List<DanmakuItemData>>() {}.type
             Log.d(DanmakuEngine.TAG, "[Sample] 开始解析数据")
-            //val dataList = Gson().fromJson<List<DanmakuItemData>>(jsonString, type)
+            val dataList = Gson().fromJson<List<DanmakuItemData>>(jsonString, type)
 
-
-            /**
-             *
-            "createTime": 1598609868506,
-            "userId": 33510000,
-            "rank": 5,
-            "textColor": 16777215,
-            "roleId": 0,
-            "danmakuId": 183675597,
-            "danmakuType": 0,
-            "content": "奥力给",
-            "mode": 5,
-            "position": 1216524,
-            "textSize": 25
-             */
-            val dataList = mutableListOf<DanmakuItemData>()
-            val drawable = resources.getDrawable(R.drawable.dragon_ball_1)
-            drawable.setBounds(0, 0, 100, 100)
-            for (index in 0L..10L) {
-                val content = createSpannable(drawable, index)
-                val itemData = DanmakuItemData(
-                    1000 + index,
-                    0 + index,
-                    content,
-                    DanmakuItemData.DANMAKU_MODE_ROLLING,
-                    20,
-                    16777215,
-                    0,
-                    DanmakuItemData.DANMAKU_STYLE_NONE,
-                    0 + index.toInt(),
-                    1000 + index,
-                    DanmakuItemData.MERGED_TYPE_NORMAL
-                )
-                if (index == 3L) {
-                    itemData.danmakuStyle = DanmakuItemData.DANMAKU_STYLE_SELF_SEND
-                } else if (index == 5L) {
-                    itemData.danmakuStyle = DanmakuItemData.DANMAKU_STYLE_ICON_UP
-                } else if (index == 8L) {
-                    itemData.danmakuStyle = DanmakuItemData.DANMAKU_STYLE_USER_AVATAR
-                }
-                dataList.add(itemData)
-            }
+            //val dataList = mockDanmaku()
             danmakuPlayer.updateData(dataList)
             Log.d(DanmakuEngine.TAG, "[Sample] 数据已加载(count = ${dataList.size})")
             danmakuView.post {
@@ -157,6 +117,51 @@ class SampleFullScreenActivity : AppCompatActivity() {
         danmakuView.post {
             Toast.makeText(this, "开始加载数据", Toast.LENGTH_SHORT).show()
         }
+    }
+
+    private fun mockDanmaku(): MutableList<DanmakuItemData> {
+        /**
+         *
+        "createTime": 1598609868506,
+        "userId": 33510000,
+        "rank": 5,
+        "textColor": 16777215,
+        "roleId": 0,
+        "danmakuId": 183675597,
+        "danmakuType": 0,
+        "content": "奥力给",
+        "mode": 5,
+        "position": 1216524,
+        "textSize": 25
+         */
+        val dataList = mutableListOf<DanmakuItemData>()
+        val drawable = resources.getDrawable(R.drawable.dragon_ball_1)
+        drawable.setBounds(0, 0, 100, 100)
+        for (index in 0L..10L) {
+            val content = createSpannable(drawable, index).toString()
+            val itemData = DanmakuItemData(
+                1000 + index,
+                0 + index,
+                content,
+                DanmakuItemData.DANMAKU_MODE_ROLLING,
+                20,
+                16777215,
+                0,
+                DanmakuItemData.DANMAKU_STYLE_NONE,
+                0 + index.toInt(),
+                1000 + index,
+                DanmakuItemData.MERGED_TYPE_NORMAL
+            )
+            if (index == 3L) {
+                itemData.danmakuStyle = DanmakuItemData.DANMAKU_STYLE_SELF_SEND
+            } else if (index == 5L) {
+                itemData.danmakuStyle = DanmakuItemData.DANMAKU_STYLE_ICON_UP
+            } else if (index == 8L) {
+                itemData.danmakuStyle = DanmakuItemData.DANMAKU_STYLE_USER_AVATAR
+            }
+            dataList.add(itemData)
+        }
+        return dataList
     }
 
     private fun createSpannable(drawable: Drawable, index: Long): SpannableStringBuilder {

@@ -161,6 +161,8 @@ class DanmakuPlayController(
       config = config.copy(allowOverlap = isChecked)
       danmakuPlayer.updateConfig(config)
     }
+
+    setScreenPart(0.5f)
   }
 
   private fun switchTypeFilter(show: Boolean, type: Int) {
@@ -260,6 +262,13 @@ class DanmakuPlayController(
     config = config.copy(textSizeScale = textScaleList[textScaleIndex])
     danmakuPlayer.updateConfig(config)
   }
+
+
+  fun setScreenPart(screenPart:Float){
+    config = config.copy(screenPart =screenPart)
+    danmakuPlayer.updateConfig(config)
+  }
+
 
   private fun createDataFilters(): List<DanmakuDataFilter> =
     listOf(
