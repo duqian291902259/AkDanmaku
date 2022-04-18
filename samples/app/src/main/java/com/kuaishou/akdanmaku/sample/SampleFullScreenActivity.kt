@@ -22,7 +22,9 @@ import com.kuaishou.akdanmaku.render.SimpleRenderer
 import com.kuaishou.akdanmaku.render.TypedDanmakuRenderer
 import com.kuaishou.akdanmaku.ui.DanmakuPlayer
 import com.kuaishou.akdanmaku.ui.DanmakuView
+import org.json.JSONObject
 import utils.UIUtils
+
 
 class SampleFullScreenActivity : AppCompatActivity() {
 
@@ -52,7 +54,7 @@ class SampleFullScreenActivity : AppCompatActivity() {
     private val mainHandler = object : Handler(Looper.getMainLooper()) {
         override fun handleMessage(msg: Message) {
             when (msg.what) {
-                MSG_START -> danmakuPlayController.start()
+                MSG_START -> start()
                 MSG_UPDATE_DATA -> updateDanmakuData()
             }
         }
@@ -63,8 +65,11 @@ class SampleFullScreenActivity : AppCompatActivity() {
 
         setContentView(R.layout.activity_sample_full_creen)
 
-        renderer.registerRenderer(DanmakuItemData.DANMAKU_STYLE_USER_AVATAR , UserAvatarRenderer(
-            ResourcesCompat.getDrawable(resources, R.drawable.dragon_ball_1, theme)!!))
+        renderer.registerRenderer(
+            DanmakuItemData.DANMAKU_STYLE_USER_AVATAR, UserAvatarRenderer(
+                ResourcesCompat.getDrawable(resources, R.drawable.dragon_ball_1, theme)!!
+            )
+        )
 
         danmakuPlayer = DanmakuPlayer(renderer).also {
             it.bindView(danmakuView)
@@ -79,11 +84,41 @@ class SampleFullScreenActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-
         if (paused) {
-            danmakuPlayController.start()
+            start()
             paused = false
         }
+    }
+
+    private fun start() {
+        danmakuPlayController.start()
+        mockAddDanmaku()
+    }
+
+    private var test = true
+
+    private fun mockAddDanmaku() {
+        Thread {
+            var i = 0
+            val countPreSecond = 15
+            while (test) {
+                danmakuPlayController.sendDanmaku()
+                i++
+                try {
+                    //Thread.sleep(if (i % countPreSecond == 0) 1000 else 500.toLong())
+                    Thread.sleep(500) //间隔一定的时间发送才不会层叠
+                } catch (e: Exception) {
+                }
+                if (i >= 100000) {
+                    test = false
+                    try {
+                        Thread.currentThread().interrupt()
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
+            }
+        }.start()
     }
 
     override fun onPause() {
@@ -108,7 +143,7 @@ class SampleFullScreenActivity : AppCompatActivity() {
             val dataList = Gson().fromJson<List<DanmakuItemData>>(jsonString, type)
 
             //val dataList = mockDanmaku()
-            danmakuPlayer.updateData(dataList)
+            //danmakuPlayer.updateData(dataList)
             Log.d(DanmakuEngine.TAG, "[Sample] 数据已加载(count = ${dataList.size})")
             danmakuView.post {
                 Toast.makeText(this, "数据已加载", Toast.LENGTH_SHORT).show()
