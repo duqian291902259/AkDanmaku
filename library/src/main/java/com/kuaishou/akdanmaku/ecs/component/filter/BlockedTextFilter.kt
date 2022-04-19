@@ -35,10 +35,10 @@ import com.kuaishou.akdanmaku.utils.DanmakuTimer
  * @since 2021-06-30
  */
 class BlockedTextFilter(val selfPredicate: (Long?) -> Boolean) : SimpleDanmakuFilter<String>(DanmakuFilters.FILTER_TYPE_BLOCKED_TEXT) {
-  override fun filterField(data: DanmakuItemData): String = data.content.toString()
+  override fun filterField(data: DanmakuItemData): String = data.content
 
   override fun filter(item: DanmakuItem, timer: DanmakuTimer, config: DanmakuConfig): Boolean {
     val data = item.data
-    return !selfPredicate(data.userId) && filterSet.any { data.content.toString().contains(it) }
+    return !selfPredicate(data.userId) && filterSet.any { data.content.contains(it) }
   }
 }

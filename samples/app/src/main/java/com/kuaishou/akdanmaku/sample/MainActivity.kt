@@ -18,5 +18,8 @@ class MainActivity : AppCompatActivity() {
     findViewById<View>(R.id.entryFullScreenStep).setOnClickListener {
       startActivity(Intent(this, SampleFullScreenActivity::class.java).putExtra("byStep", true))
     }
+
+    startActivity(Intent(this, SampleFullScreenActivity::class.java))
+
   }
 }

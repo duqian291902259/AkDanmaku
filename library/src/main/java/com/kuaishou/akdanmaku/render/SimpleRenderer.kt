@@ -95,7 +95,7 @@ open class SimpleRenderer : DanmakuRenderer {
     ): Size {
         updatePaint(item, displayer, config)
         val danmakuItemData = item.data
-        val textWidth = textPaint.measureText(danmakuItemData.content.toString())
+        val textWidth = textPaint.measureText(danmakuItemData.content)
         val textHeight = getCacheHeight(textPaint)
         return Size(textWidth.roundToInt() + CANVAS_PADDING, textHeight.roundToInt() + CANVAS_PADDING)
     }
@@ -110,8 +110,8 @@ open class SimpleRenderer : DanmakuRenderer {
         val danmakuItemData = item.data
         val x = CANVAS_PADDING * 0.5f
         val y = CANVAS_PADDING * 0.5f - textPaint.ascent()
-        canvas.drawText(danmakuItemData.content.toString(), x, y, strokePaint)
-        canvas.drawText(danmakuItemData.content.toString(), x, y, textPaint)
+        canvas.drawText(danmakuItemData.content, x, y, strokePaint)
+        canvas.drawText(danmakuItemData.content, x, y, textPaint)
         if (danmakuItemData.danmakuStyle == DanmakuItemData.DANMAKU_STYLE_SELF_SEND) {
             canvas.drawRect(0f, 0f, canvas.width.toFloat(), canvas.height.toFloat(), borderPaint)
         }

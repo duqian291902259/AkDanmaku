@@ -245,13 +245,13 @@ class DanmakuPlayController(
     fun sendDanmaku() {
         val danmaku = DanmakuItemData(
             Random.nextLong(),
-            danmakuPlayer.getCurrentTimeMs() + 3500,
-            "这是我自己发送的内容(*^▽^*)😄",
+            danmakuPlayer.getCurrentTimeMs() + 500,
+            "这是我自己发送的内容(*^▽^*)😄".substring(0, (Math.random()*15).toInt()+1),
             DanmakuItemData.DANMAKU_MODE_ROLLING,
             25,
             Color.WHITE,
             9,
-            DanmakuItemData.DANMAKU_STYLE_ICON_UP,
+           if (Random.nextBoolean()) DanmakuItemData.DANMAKU_STYLE_ICON_UP else  DanmakuItemData.DANMAKU_STYLE_NONE,
             9
         )
         val item = danmakuPlayer.obtainItem(danmaku)
@@ -292,4 +292,5 @@ class DanmakuPlayController(
         )
 
     private fun createLayoutFilters(): List<DanmakuLayoutFilter> = emptyList()
+
 }

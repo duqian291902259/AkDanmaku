@@ -24,6 +24,7 @@ import com.kuaishou.akdanmaku.ui.DanmakuPlayer
 import com.kuaishou.akdanmaku.ui.DanmakuView
 import org.json.JSONObject
 import utils.UIUtils
+import kotlin.random.Random
 
 
 class SampleFullScreenActivity : AppCompatActivity() {
@@ -75,8 +76,8 @@ class SampleFullScreenActivity : AppCompatActivity() {
             it.bindView(danmakuView)
         }
         danmakuPlayController = DanmakuPlayController(this, danmakuPlayer, byStep)
-        mainHandler.sendEmptyMessageDelayed(MSG_UPDATE_DATA, 2000)
-        mainHandler.sendEmptyMessageDelayed(MSG_START, 2500)
+        mainHandler.sendEmptyMessageDelayed(MSG_UPDATE_DATA, 1000)
+        mainHandler.sendEmptyMessageDelayed(MSG_START, 1500)
 
 
         UIUtils.traceFrame(mainHandler)
@@ -91,7 +92,8 @@ class SampleFullScreenActivity : AppCompatActivity() {
     }
 
     private fun start() {
-        danmakuPlayController.start()
+        danmakuPlayController.start()// TODO-dq: 重新开始，应该不用显示已经过期的弹幕
+        danmakuPlayer.getCurrentTimeMs()
         mockAddDanmaku()
     }
 
@@ -100,13 +102,21 @@ class SampleFullScreenActivity : AppCompatActivity() {
     private fun mockAddDanmaku() {
         Thread {
             var i = 0
-            val countPreSecond = 15
+            val countPreSecond = 5
             while (test) {
+                danmakuPlayController.sendDanmaku()
+                Thread.sleep(10) //间隔一定的时间发送才不会层叠
+                danmakuPlayController.sendDanmaku()
+                Thread.sleep(10) //间隔一定的时间发送才不会层叠
+                danmakuPlayController.sendDanmaku()
+                Thread.sleep(10) //间隔一定的时间发送才不会层叠
+                danmakuPlayController.sendDanmaku()
+                Thread.sleep(10) //间隔一定的时间发送才不会层叠
                 danmakuPlayController.sendDanmaku()
                 i++
                 try {
                     //Thread.sleep(if (i % countPreSecond == 0) 1000 else 500.toLong())
-                    Thread.sleep(500) //间隔一定的时间发送才不会层叠
+                    Thread.sleep(1000) //间隔一定的时间发送才不会层叠
                 } catch (e: Exception) {
                 }
                 if (i >= 100000) {
@@ -123,7 +133,6 @@ class SampleFullScreenActivity : AppCompatActivity() {
 
     override fun onPause() {
         super.onPause()
-
         danmakuPlayController.pause()
         paused = true
     }
@@ -140,10 +149,10 @@ class SampleFullScreenActivity : AppCompatActivity() {
             val jsonString = assets.open("test_danmaku_data.json").bufferedReader().use { it.readText() }
             val type = object : TypeToken<List<DanmakuItemData>>() {}.type
             Log.d(DanmakuEngine.TAG, "[Sample] 开始解析数据")
-            val dataList = Gson().fromJson<List<DanmakuItemData>>(jsonString, type)
+            //val dataList = Gson().fromJson<List<DanmakuItemData>>(jsonString, type)
 
-            //val dataList = mockDanmaku()
-            //danmakuPlayer.updateData(dataList)
+            val dataList = mockDanmaku()
+            danmakuPlayer.updateData(dataList)
             Log.d(DanmakuEngine.TAG, "[Sample] 数据已加载(count = ${dataList.size})")
             danmakuView.post {
                 Toast.makeText(this, "数据已加载", Toast.LENGTH_SHORT).show()
@@ -172,26 +181,26 @@ class SampleFullScreenActivity : AppCompatActivity() {
         val dataList = mutableListOf<DanmakuItemData>()
         val drawable = resources.getDrawable(R.drawable.dragon_ball_1)
         drawable.setBounds(0, 0, 100, 100)
-        for (index in 0L..10L) {
+        for (index in 0..10) {
             val content = createSpannable(drawable, index).toString()
             val itemData = DanmakuItemData(
-                1000 + index,
-                0 + index,
+                1000L + index,
+                danmakuPlayer.getCurrentTimeMs() + index,
                 content,
                 DanmakuItemData.DANMAKU_MODE_ROLLING,
-                20,
+                10+index,
                 16777215,
-                0,
+                0+index,
                 DanmakuItemData.DANMAKU_STYLE_NONE,
-                0 + index.toInt(),
-                1000 + index,
-                DanmakuItemData.MERGED_TYPE_NORMAL
+                0 + index,
+                1000L + index,
+                if(Random.nextBoolean()) DanmakuItemData.MERGED_TYPE_NORMAL else DanmakuItemData.MERGED_TYPE_MERGED
             )
-            if (index == 3L) {
+            if (index == 3) {
                 itemData.danmakuStyle = DanmakuItemData.DANMAKU_STYLE_SELF_SEND
-            } else if (index == 5L) {
+            } else if (index == 5) {
                 itemData.danmakuStyle = DanmakuItemData.DANMAKU_STYLE_ICON_UP
-            } else if (index == 8L) {
+            } else if (index == 8) {
                 itemData.danmakuStyle = DanmakuItemData.DANMAKU_STYLE_USER_AVATAR
             }
             dataList.add(itemData)
@@ -199,7 +208,7 @@ class SampleFullScreenActivity : AppCompatActivity() {
         return dataList
     }
 
-    private fun createSpannable(drawable: Drawable, index: Long): SpannableStringBuilder {
+    private fun createSpannable(drawable: Drawable, index: Int): SpannableStringBuilder {
         val text = "bitmap"
         val spannableStringBuilder = SpannableStringBuilder(text)
         val span = ImageSpan(drawable) //ImageSpan.ALIGN_BOTTOM);
