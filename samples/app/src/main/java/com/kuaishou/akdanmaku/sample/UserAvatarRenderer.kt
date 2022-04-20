@@ -44,7 +44,12 @@ class UserAvatarRenderer(val drawable: Drawable) : SimpleRenderer() {
         displayer: DanmakuDisplayer,
         config: DanmakuConfig
     ) {
-        rect.set(0f, 0f, canvas.width.toFloat(), canvas.height.toFloat())
+        val width = canvas.width.toFloat()
+        val height = canvas.height.toFloat()
+        if (width > 1000 || height > 1000) {
+            return
+        }
+        rect.set(0f, 0f, width, height)
         val radius = canvas.height * 0.5f
         canvas.drawRoundRect(rect, radius, radius, backgroundPaint)
 
